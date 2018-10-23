@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/personmanage
+    hikari:
+      username: root
+      password: root
+  activemq:
+    broker-url: tcp://127.0.0.1:61616
+    user: admin
+    password: admin
+    in-memory: true
+    pool:
+      enabled: false
+#  jms:
+#   pub-sub-domain: true  #activeMQ默认是queue模式的，要用topic的话，写上这个注释，但是写上这个注释就不支持queue，如果要同时支持queue和topic就要注释掉当前配置，用JmsListenerContainerFactory去实现
+#      enabled: true 这个enable到close-timeOut放开，程序就会报错
+#      max-connections: 100
+#      expiry-timeout: 0ms
+#      idle-timeout: 30s
+#    send-timeout: 30s
+#    packages:
+#      trust-all: true
+#    close-timeout: 5s
+mybatis:
+#  mapper-locations: classpath*:mapper/*.xml
+  mapper-locations: classpath*:com/springboot/**/dao/mapper/*.xml

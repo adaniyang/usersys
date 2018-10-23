@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.usersys.dao.DepartmentDao1">
+    <!-- Department1的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_Department1_Map" type="com.springboot.usersys.pojo.Department1">
+        <id column="ID" property="id" />
+        <result column="DEPARTMENT_NAME" property="departmentName" />
+        <result column="DEL_STATUS" property="delStatus" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="PARENT_ID" property="parentId" />
+    </resultMap>
+
+	   <!-- Assist用于辅助工具类setRequires设置的条件,${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value} <if test="req.suffix != null"> ${req.suffix}</if>
+            </foreach>
+        </where>
+    </sql>
+
+	   <!-- updateAssist用于更新数据的使用它拓展自Assist,用于辅助工具类setRequires设置的条件,${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value} <if test="req.suffix != null"> ${req.suffix}</if>
+            </foreach>
+        </where>
+    </sql>
+
+    <!-- 数据库中表名为:department的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="department_Column">
+        department.ID as ID
+        ,department.DEPARTMENT_NAME as DEPARTMENT_NAME
+        ,department.DEL_STATUS as DEL_STATUS
+        ,department.CREATE_TIME as CREATE_TIME
+        ,department.UPDATE_TIME as UPDATE_TIME
+        ,department.PARENT_ID as PARENT_ID
+    </sql>
+
+    <!--获得类名为:Department1对应的数据库表的数据总行数 -->
+    <select id="getDepartment1RowCount" parameterType="com.common.Assist" resultType="java.lang.Long">
+        select count(ID) from department
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <!-- 获得类名为:Department1对应数据库中表的数据集合 -->
+    <select id="selectDepartment1" parameterType="com.common.Assist"  resultMap="result_Department1_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="department_Column" /> 
+            </otherwise>
+        </choose>
+        from department
+        <choose>
+            <when test="rowSize ==null">
+                <if test="require!=null">
+                    <include refid="Assist" />
+                </if>
+                <if test="order !=null">${order}</if>
+            </when>
+            <otherwise>
+                inner join
+                (
+                SELECT ID as primary_key FROM department
+                <if test="require!=null">
+                    <include refid="Assist" />
+                </if>
+                <if test="order !=null">${order}</if>
+                <choose>
+                    <when test="startRow !=null and rowSize !=null">LIMIT #{startRow},#{rowSize} </when>
+                    <when test="rowSize !=null">LIMIT #{rowSize}</when>
+                 </choose>
+                 ) as tmp
+                 on tmp.primary_key=department.ID
+            </otherwise>
+        </choose>
+    </select> 
+
+    <!-- 获得一个Department1对象,以参数Department1对象中不为空的属性作为条件进行查询-->
+    <select id="selectDepartment1ByObj" parameterType="com.springboot.usersys.pojo.Department1" resultMap="result_Department1_Map">
+        select 
+            <include refid="department_Column" /> 
+        from department
+        <where>
+            <if test="parentId != null "> and department.PARENT_ID = #{parentId}</if>
+            <if test="updateTime != null "> and department.UPDATE_TIME = #{updateTime}</if>
+            <if test="createTime != null "> and department.CREATE_TIME = #{createTime}</if>
+            <if test="delStatus != null "> and department.DEL_STATUS = #{delStatus}</if>
+            <if test="departmentName != null "> and department.DEPARTMENT_NAME = #{departmentName}</if>
+            <if test="id != null "> and department.ID = #{id}</if>
+        </where>
+    </select> 
+
+    <!-- 通过Department1的id获得对应数据库中表的数据对象-->
+    <select id="selectDepartment1ById" parameterType="java.lang.Long" resultMap="result_Department1_Map">
+        select 
+            <include refid="department_Column" /> 
+        from department
+        where department.ID = #{id}
+    </select> 
+
+    <!-- 将Department1插入到对应数据库的表中,包括属性值为null的数据-->
+
+    <insert id="insertDepartment1" parameterType="com.springboot.usersys.pojo.Department1">
+        insert into department(ID,DEPARTMENT_NAME,DEL_STATUS,CREATE_TIME,UPDATE_TIME,PARENT_ID) 
+        values(#{id},#{departmentName},#{delStatus},#{createTime},#{updateTime},#{parentId})
+    </insert>
+
+    <!-- 将Department1中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyDepartment1" parameterType="com.springboot.usersys.pojo.Department1">
+        insert into department
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="departmentName != null">DEPARTMENT_NAME,</if>
+            <if test="delStatus != null">DEL_STATUS,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="parentId != null">PARENT_ID,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="departmentName != null"> #{departmentName},</if>
+            <if test="delStatus != null"> #{delStatus},</if>
+            <if test="createTime != null"> #{createTime},</if>
+            <if test="updateTime != null"> #{updateTime},</if>
+            <if test="parentId != null"> #{parentId},</if>
+        </trim>
+    </insert>
+
+    <!-- 将Department1批量插入到对应数据库的表中-->
+    <insert id="insertDepartment1ByBatch" parameterType="ArrayList">
+        insert into department(ID,DEPARTMENT_NAME,DEL_STATUS,CREATE_TIME,UPDATE_TIME,PARENT_ID) values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id},#{item.departmentName},#{item.delStatus},#{item.createTime},#{item.updateTime},#{item.parentId})
+        </foreach>
+    </insert>
+
+    <!-- 通过Department1的id将数据库表中对应的数据删除-->
+    <delete id="deleteDepartment1ById" parameterType="java.lang.Long">
+        delete from department
+        where ID = #{id}
+    </delete>
+
+    <!-- 通过辅助工具Assist中的条件将Department1对应的数据库表的数据删除-->
+    <delete id="deleteDepartment1" parameterType="com.common.Assist">
+        delete from department
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <!-- 通过Department1的id将Department1的数据更新到数据库中对应的表,包括值null的数据-->
+    <update id="updateDepartment1ById" parameterType="com.springboot.usersys.pojo.Department1">
+        update department set
+            DEPARTMENT_NAME=#{departmentName}
+            ,DEL_STATUS=#{delStatus}
+            ,CREATE_TIME=#{createTime}
+            ,UPDATE_TIME=#{updateTime}
+            ,PARENT_ID=#{parentId}
+        where ID=#{id}
+    </update>
+
+    <!-- 通过Department1的id将Department1中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyDepartment1ById" parameterType="com.springboot.usersys.pojo.Department1">
+        update department
+        <set>
+            <if test="departmentName != null">
+                DEPARTMENT_NAME=#{departmentName},
+            </if>
+            <if test="delStatus != null">
+                DEL_STATUS=#{delStatus},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME=#{createTime},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME=#{updateTime},
+            </if>
+            <if test="parentId != null">
+                PARENT_ID=#{parentId},
+            </if>
+        </set>
+        where ID=#{id}
+    </update>
+
+    <!-- 通过辅助工具Assist中的条件将Department1中的数据更新到数据库对应的表中,包括值为null的数据-->
+    <update id="updateDepartment1" parameterType="map">
+        update department
+        <set>
+                ID=#{enti.id},
+                DEPARTMENT_NAME=#{enti.departmentName},
+                DEL_STATUS=#{enti.delStatus},
+                CREATE_TIME=#{enti.createTime},
+                UPDATE_TIME=#{enti.updateTime},
+                PARENT_ID=#{enti.parentId},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <!-- 通过辅助工具Assist中的条件将Department1中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyDepartment1" parameterType="map">
+        update department
+        <set>
+            <if test="enti.id != null">
+                ID=#{enti.id},
+            </if>
+            <if test="enti.departmentName != null">
+                DEPARTMENT_NAME=#{enti.departmentName},
+            </if>
+            <if test="enti.delStatus != null">
+                DEL_STATUS=#{enti.delStatus},
+            </if>
+            <if test="enti.createTime != null">
+                CREATE_TIME=#{enti.createTime},
+            </if>
+            <if test="enti.updateTime != null">
+                UPDATE_TIME=#{enti.updateTime},
+            </if>
+            <if test="enti.parentId != null">
+                PARENT_ID=#{enti.parentId},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>
