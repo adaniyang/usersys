@@ -20,7 +20,7 @@ import javax.jms.Topic;
 @Configuration
 public class JmsConfig {
     public final static String TOPIC = "springBoot.Topic.test";
-    public final static String    QUEUE = "springBoot.Queue.test";
+    public final static String QUEUE = "springBoot.Queue.test";
 
     @Bean
     public Topic topic(){
