@@ -35,7 +35,7 @@ public class ActiveMQTest {
 
     @Test
     public void test1() {
-        System.out.println("888888888");
+        System.out.println("8888888886666666");
     }
 
     @Test
