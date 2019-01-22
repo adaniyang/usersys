@@ -1,4 +1,4 @@
-package com.springboot.activiti.commom.modeler;
+package com.springboot.activiCommon.commom.modeler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

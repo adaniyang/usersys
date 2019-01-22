@@ -1,4 +1,4 @@
-package com.springboot.activiti.explorer;
+package com.springboot.activiCommon.explorer;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;

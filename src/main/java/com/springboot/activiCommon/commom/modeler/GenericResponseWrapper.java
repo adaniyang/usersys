@@ -1,4 +1,4 @@
-package com.springboot.activiti.commom.modeler;
+package com.springboot.activiCommon.commom.modeler;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +21,7 @@ public class GenericResponseWrapper extends HttpServletResponseWrapper {
   } 
 
   public ServletOutputStream getOutputStream() { 
-    return new FilterServletOutputStream(output); 
+    return new FilterServletOutputStream(output);
   } 
   
   public PrintWriter getWriter() { 

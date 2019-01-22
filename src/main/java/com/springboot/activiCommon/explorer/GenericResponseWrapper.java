@@ -1,11 +1,10 @@
-package com.springboot.activiti.explorer;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
+package com.springboot.activiCommon.explorer;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 
 public class GenericResponseWrapper extends HttpServletResponseWrapper { 
   private ByteArrayOutputStream output;
@@ -22,7 +21,7 @@ public class GenericResponseWrapper extends HttpServletResponseWrapper {
   } 
 
   public ServletOutputStream getOutputStream() { 
-    return new FilterServletOutputStream(output); 
+    return new FilterServletOutputStream(output);
   } 
   
   public PrintWriter getWriter() { 

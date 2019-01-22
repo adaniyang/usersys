@@ -18,7 +18,7 @@
  */
 
 /*
- * String controller
+ * String api
  */
 
 var KisBpmStringPropertyCtrl = [ '$scope', function ($scope) {
@@ -53,7 +53,7 @@ var KisBpmStringPropertyCtrl = [ '$scope', function ($scope) {
 }];
 
 /*
- * Boolean controller
+ * Boolean api
  */
 
 var KisBpmBooleanPropertyCtrl = ['$scope', function ($scope) {
@@ -87,7 +87,7 @@ var KisBpmBooleanPropertyCtrl = ['$scope', function ($scope) {
 }];
 
 /*
- * Text controller
+ * Text api
  */
 
 var KisBpmTextPropertyCtrl = [ '$scope', '$modal', function($scope, $modal) {

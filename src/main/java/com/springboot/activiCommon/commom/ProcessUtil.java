@@ -1,4 +1,4 @@
-package com.springboot.activiti.commom;
+package com.springboot.activiCommon.commom;
 
 import com.common.Assist;
 import com.springboot.activiti.dao.LeaveInfoDao;

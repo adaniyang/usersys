@@ -18,7 +18,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(io.swagger.annotations.Api.class))
-//                .apis(RequestHandlerSelectors.basePackage("com.springboot.usersys.controller"))
+//                .apis(RequestHandlerSelectors.basePackage("com.springboot.usersys.api"))
                 .paths(PathSelectors.any())
                 .build();
     }

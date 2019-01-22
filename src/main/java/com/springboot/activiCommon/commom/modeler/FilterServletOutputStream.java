@@ -1,4 +1,4 @@
-package com.springboot.activiti.commom.modeler;
+package com.springboot.activiCommon.commom.modeler;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;

@@ -24,7 +24,7 @@ spring:
 #      trust-all: true
 #    close-timeout: 5s
   activiti:
-    check-process-definitions: false
+    check-process-definitions: false #不检查resources下的processes目录下的流程文件
 
 mybatis:
 #  dao-locations: classpath*:dao/*.xml dao层的xml文件默认保存到resources下的dao或mapper文件夹下，现在放到各模块下的dao下的mapper下

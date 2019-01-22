@@ -1,4 +1,4 @@
-package com.springboot.activiti.explorer;
+package com.springboot.activiCommon.explorer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
