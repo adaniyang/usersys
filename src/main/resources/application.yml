@@ -23,6 +23,9 @@ spring:
 #    packages:
 #      trust-all: true
 #    close-timeout: 5s
+  activiti:
+    check-process-definitions: false
+
 mybatis:
-#  mapper-locations: classpath*:mapper/*.xml
+#  dao-locations: classpath*:dao/*.xml dao层的xml文件默认保存到resources下的dao或mapper文件夹下，现在放到各模块下的dao下的mapper下
   mapper-locations: classpath*:com/springboot/**/dao/mapper/*.xml

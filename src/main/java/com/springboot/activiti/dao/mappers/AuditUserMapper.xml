@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.es.act.dao.AuditUserDao">
+    <!-- AuditUser的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_AuditUser_Map" type="com.es.act.pojo.domain.AuditUser">
+        <id column="ID" property="id" />
+        <result column="USER_FK_CODE" property="userfkcode" />
+        <result column="DEL_STATUS" property="delstatus" />
+        <result column="CREATE_TIME" property="createtime" />
+        <result column="UPDATE_TIME" property="updatetime" />
+        <result column="LEVEL" property="level" />
+        <result column="USER_NAME" property="username" />
+        <result column="FK_CODE" property="fkcode" />
+    </resultMap>
+
+	   <!-- Assist用于辅助工具类setRequires设置的条件,${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value} <if test="req.suffix != null"> ${req.suffix}</if>
+            </foreach>
+        </where>
+    </sql>
+
+	   <!-- updateAssist用于更新数据的使用它拓展自Assist,用于辅助工具类setRequires设置的条件,${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value} <if test="req.suffix != null"> ${req.suffix}</if>
+            </foreach>
+        </where>
+    </sql>
+
+    <!-- 数据库中表名为:audit_user的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="audit_user_Column">
+        audit_user.ID as ID
+        ,audit_user.USER_FK_CODE as USER_FK_CODE
+        ,audit_user.DEL_STATUS as DEL_STATUS
+        ,audit_user.CREATE_TIME as CREATE_TIME
+        ,audit_user.UPDATE_TIME as UPDATE_TIME
+        ,audit_user.LEVEL as LEVEL
+        ,audit_user.USER_NAME as USER_NAME
+        ,audit_user.FK_CODE as FK_CODE
+    </sql>
+
+    <!--获得类名为:AuditUser对应的数据库表的数据总行数 -->
+    <select id="getAuditUserRowCount" parameterType="com.es.app_common.util.Assist" resultType="java.lang.Long">
+        select count(ID) from audit_user
+        <if test="require!=null"><include refid="Assist" /></if>
+    </select>
+    <!-- 获得类名为:AuditUser对应数据库中表的数据集合 -->
+    <select id="selectAuditUser" parameterType="com.es.app_common.util.Assist"  resultMap="result_AuditUser_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+        <include refid="audit_user_Column" /> 
+            </otherwise>
+        </choose>
+        from audit_user
+        <choose>
+            <when test="rowSize ==null">
+                <if test="require!=null">
+                    <include refid="Assist" />
+                </if>
+                <if test="order !=null">${order}</if>
+            </when>
+            <otherwise>
+                inner join
+                (
+                SELECT ID as primary_key FROM audit_user
+                <if test="require!=null">
+                    <include refid="Assist" />
+                </if>
+                <if test="order !=null">${order}</if>
+                <choose>
+                    <when test="startRow !=null and rowSize !=null">LIMIT #{startRow},#{rowSize} </when>
+                    <when test="rowSize !=null">LIMIT #{rowSize}</when>
+                 </choose>
+                 ) as tmp
+                 on tmp.primary_key=audit_user.ID
+            </otherwise>
+        </choose>
+    </select> 
+
+    <!-- 获得一个AuditUser对象,以参数AuditUser对象中不为空的属性作为条件进行查询-->
+    <select id="selectAuditUserByObj" parameterType="com.es.act.pojo.domain.AuditUser" resultMap="result_AuditUser_Map">
+        select 
+            <include refid="audit_user_Column" /> 
+        from audit_user
+        <where>
+            <if test="fkcode != null "> and audit_user.FK_CODE = #{fkcode}</if>
+            <if test="username != null "> and audit_user.USER_NAME = #{username}</if>
+            <if test="level != null "> and audit_user.LEVEL = #{level}</if>
+            <if test="updatetime != null "> and audit_user.UPDATE_TIME = #{updatetime}</if>
+            <if test="createtime != null "> and audit_user.CREATE_TIME = #{createtime}</if>
+            <if test="delstatus != null "> and audit_user.DEL_STATUS = #{delstatus}</if>
+            <if test="userfkcode != null "> and audit_user.USER_FK_CODE = #{userfkcode}</if>
+            <if test="id != null "> and audit_user.ID = #{id}</if>
+        </where>
+    </select> 
+
+    <!-- 通过AuditUser的id获得对应数据库中表的数据对象-->
+    <select id="selectAuditUserById" parameterType="java.lang.Long" resultMap="result_AuditUser_Map">
+        select 
+            <include refid="audit_user_Column" /> 
+        from audit_user
+        where audit_user.ID = #{id}
+    </select> 
+
+    <!-- 将AuditUser插入到对应数据库的表中,包括属性值为null的数据-->
+
+    <insert id="insertAuditUser" parameterType="com.es.act.pojo.domain.AuditUser">
+        <selectKey keyProperty="id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into audit_user(ID,USER_FK_CODE,DEL_STATUS,CREATE_TIME,UPDATE_TIME,LEVEL,USER_NAME,FK_CODE) 
+        values(#{id},#{userfkcode},#{delstatus},#{createtime},#{updatetime},#{level},#{username},#{fkcode})
+    </insert>
+
+    <!-- 将AuditUser中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyAuditUser" parameterType="com.es.act.pojo.domain.AuditUser">
+        <selectKey keyProperty="id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into audit_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="userfkcode != null">USER_FK_CODE,</if>
+            <if test="delstatus != null">DEL_STATUS,</if>
+            <if test="createtime != null">CREATE_TIME,</if>
+            <if test="updatetime != null">UPDATE_TIME,</if>
+            <if test="level != null">LEVEL,</if>
+            <if test="username != null">USER_NAME,</if>
+            <if test="fkcode != null">FK_CODE,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="userfkcode != null"> #{userfkcode},</if>
+            <if test="delstatus != null"> #{delstatus},</if>
+            <if test="createtime != null"> #{createtime},</if>
+            <if test="updatetime != null"> #{updatetime},</if>
+            <if test="level != null"> #{level},</if>
+            <if test="username != null"> #{username},</if>
+            <if test="fkcode != null"> #{fkcode},</if>
+        </trim>
+    </insert>
+
+    <!-- 将AuditUser批量插入到对应数据库的表中-->
+    <insert id="insertAuditUserByBatch" parameterType="ArrayList">
+        <selectKey keyProperty="id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into audit_user(ID,USER_FK_CODE,DEL_STATUS,CREATE_TIME,UPDATE_TIME,LEVEL,USER_NAME,FK_CODE) values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id},#{item.userfkcode},#{item.delstatus},#{item.createtime},#{item.updatetime},#{item.level},#{item.username},#{item.fkcode})
+        </foreach>
+    </insert>
+
+    <!-- 通过AuditUser的id将数据库表中对应的数据删除-->
+    <delete id="deleteAuditUserById" parameterType="java.lang.Long">
+        delete from audit_user
+        where ID = #{id}
+    </delete>
+
+    <!-- 通过辅助工具Assist中的条件将AuditUser对应的数据库表的数据删除-->
+    <delete id="deleteAuditUser" parameterType="com.es.app_common.util.Assist">
+        delete from audit_user
+        <if test="require!=null"><include refid="Assist" /></if>
+    </delete>
+
+    <!-- 通过AuditUser的id将AuditUser的数据更新到数据库中对应的表,包括值null的数据-->
+    <update id="updateAuditUserById" parameterType="com.es.act.pojo.domain.AuditUser">
+        update audit_user set
+            USER_FK_CODE=#{userfkcode}
+            ,DEL_STATUS=#{delstatus}
+            ,CREATE_TIME=#{createtime}
+            ,UPDATE_TIME=#{updatetime}
+            ,LEVEL=#{level}
+            ,USER_NAME=#{username}
+            ,FK_CODE=#{fkcode}
+        where ID=#{id}
+    </update>
+
+    <!-- 通过AuditUser的id将AuditUser中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyAuditUserById" parameterType="com.es.act.pojo.domain.AuditUser">
+        update audit_user
+        <set>
+            <if test="userfkcode != null">
+                USER_FK_CODE=#{userfkcode},
+            </if>
+            <if test="delstatus != null">
+                DEL_STATUS=#{delstatus},
+            </if>
+            <if test="createtime != null">
+                CREATE_TIME=#{createtime},
+            </if>
+            <if test="updatetime != null">
+                UPDATE_TIME=#{updatetime},
+            </if>
+            <if test="level != null">
+                LEVEL=#{level},
+            </if>
+            <if test="username != null">
+                USER_NAME=#{username},
+            </if>
+            <if test="fkcode != null">
+                FK_CODE=#{fkcode},
+            </if>
+        </set>
+        where ID=#{id}
+    </update>
+
+    <!-- 通过辅助工具Assist中的条件将AuditUser中的数据更新到数据库对应的表中,包括值为null的数据-->
+    <update id="updateAuditUser" parameterType="map">
+        update audit_user
+        <set>
+                ID=#{enti.id},
+                USER_FK_CODE=#{enti.userfkcode},
+                DEL_STATUS=#{enti.delstatus},
+                CREATE_TIME=#{enti.createtime},
+                UPDATE_TIME=#{enti.updatetime},
+                LEVEL=#{enti.level},
+                USER_NAME=#{enti.username},
+                FK_CODE=#{enti.fkcode},
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+    <!-- 通过辅助工具Assist中的条件将AuditUser中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyAuditUser" parameterType="map">
+        update audit_user
+        <set>
+            <if test="enti.id != null">
+                ID=#{enti.id},
+            </if>
+            <if test="enti.userfkcode != null">
+                USER_FK_CODE=#{enti.userfkcode},
+            </if>
+            <if test="enti.delstatus != null">
+                DEL_STATUS=#{enti.delstatus},
+            </if>
+            <if test="enti.createtime != null">
+                CREATE_TIME=#{enti.createtime},
+            </if>
+            <if test="enti.updatetime != null">
+                UPDATE_TIME=#{enti.updatetime},
+            </if>
+            <if test="enti.level != null">
+                LEVEL=#{enti.level},
+            </if>
+            <if test="enti.username != null">
+                USER_NAME=#{enti.username},
+            </if>
+            <if test="enti.fkcode != null">
+                FK_CODE=#{enti.fkcode},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+
+</mapper>

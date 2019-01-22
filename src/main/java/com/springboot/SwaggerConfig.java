@@ -17,8 +17,8 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-//                .apis(RequestHandlerSelectors.withClassAnnotation(io.swagger.annotations.Api.class))
-                .apis(RequestHandlerSelectors.basePackage("com.springboot.usersys.controller"))
+                .apis(RequestHandlerSelectors.withClassAnnotation(io.swagger.annotations.Api.class))
+//                .apis(RequestHandlerSelectors.basePackage("com.springboot.usersys.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
