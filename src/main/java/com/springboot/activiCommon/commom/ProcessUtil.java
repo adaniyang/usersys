@@ -103,10 +103,10 @@ public class ProcessUtil {
     }
 
     //启动流程
-    //LeaveProcess:这个流程的id,很重要
+    //processId:流程的id,很重要
     //taskFkCode:请假单的fkcode
-    public void startProcess(String taskFkCode) {
-        runtimeService.startProcessInstanceByKey("LeaveProcess", taskFkCode);
+    public void startProcess(String processId,String taskFkCode) {
+        runtimeService.startProcessInstanceByKey(processId, taskFkCode);
     }
 
     //查询相关审批人

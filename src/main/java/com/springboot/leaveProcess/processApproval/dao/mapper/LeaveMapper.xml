@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.leaveProcess.processApproval.dao.LeaveDao">
+    <!-- LeaveInfo的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_LeaveInfo_Map" type="com.springboot.leaveProcess.processApproval.pojo.domain.LeaveDomain">
+        <id column="ID" property="id" />
+        <result column="FK_CODE" property="fkCode" />
+        <result column="USER_FK_CODE" property="userFkCode" />
+        <result column="USER_NAME" property="userName" />
+        <result column="LEAVE_TYPE" property="leaveType" />
+        <result column="LEAVE_MSG" property="leaveMsg" />
+        <result column="LEAVE_TIME_START" property="leaveStartTime" />
+        <result column="LEAVE_TIME_END" property="leaveEndTime" />
+        <result column="STATUS" property="status" />
+        <result column="DELETE_STATUS" property="deleteStatus" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="START_STATUS" property="startStatus" />
+        <result column="PROCESS_ID" property="processId" />
+    </resultMap>
+
+    <!-- 数据库中表名为:t_leave的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="t_leave_Column">
+        t_leave.ID as ID,
+        ,t_leave.FK_CODE as FK_CODE
+        t_leave.USER_FK_CODE as USER_FK_CODE
+        ,t_leave.USER_NAME as USER_NAME
+        ,t_leave.LEAVE_TYPE as LEAVE_TYPE
+        ,t_leave.LEAVE_MSG as LEAVE_MSG
+        ,t_leave.LEAVE_TIME_START as LEAVE_TIME_START
+        ,t_leave.LEAVE_TIME_END as LEAVE_TIME_END
+        ,t_leave.STATUS as STATUS
+        ,t_leave.DELETE_STATUS as DELETE_STATUS
+        ,t_leave.CREATE_TIME as CREATE_TIME
+        ,t_leave.UPDATE_TIME as UPDATE_TIME
+        ,t_leave.START_STATUS AS START_STATUS
+        ,t_leave.PROCESS_ID AS PROCESS_ID
+    </sql>
+
+    <!-- 获得一个LeaveInfo对象,以参数LeaveInfo对象中不为空的属性作为条件进行查询-->
+    <select id="selectLeaveInfoByObj" parameterType="com.springboot.leaveProcess.processApproval.pojo.domain.LeaveDomain" resultMap="result_LeaveInfo_Map">
+        select 
+            <include refid="t_leave_Column" /> 
+        from t_leave
+        <where>
+            <if test="fkCode != null "> and t_leave.FK_CODE = #{fkCode}</if>
+            <if test="userFkCode != null "> and t_leave.USER_FK_CODE = #{userFkCode}</if>
+            <if test="userName != null "> and t_leave.USER_NAME = #{userName}</if>
+            <if test="leaveType != null "> and t_leave.LEAVE_TYPE = #{leaveType}</if>
+            <if test="leaveMsg != null "> and t_leave.LEAVE_MSG = #{leaveMsg}</if>
+            <if test="leaveStartTime != null "> and t_leave.LEAVE_TIME_START = #{leaveStartTime}</if>
+            <if test="leaveEndTime != null "> and t_leave.LEAVE_TIME_END = #{leaveEndTime}</if>
+            <if test="status != null "> and t_leave.STATUS = #{status}</if>
+            <if test="id != null "> and t_leave.ID = #{id}</if>
+            <if test="deleteStatus != null "> and t_leave.DELETE_STATUS = #{deleteStatus}</if>
+            <if test="updateTime != null "> and t_leave.UPDATE_TIME = #{updateTime}</if>
+            <if test="createTime != null "> and t_leave.CREATE_TIME = #{createTime}</if>
+            <if test="startStatus != null "> and t_leave.START_STATUS = #{startStatus}</if>
+            <if test="processId != null "> and t_leave.PROCESS_ID = #{processId}</if>
+        </where>
+    </select>
+
+    <!-- 将LeaveInfo中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyLeaveInfo" parameterType="com.springboot.leaveProcess.processApproval.pojo.domain.LeaveDomain">
+        <selectKey keyProperty="id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into t_leave
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="status != null">STATUS,</if>
+            <if test="userName != null">USER_NAME,</if>
+            <if test="leaveType != null">LEAVE_TYPE,</if>
+            <if test="deleteStatus != null">DELETE_STATUS,</if>
+            <if test="leaveMsg != null">LEAVE_MSG,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="userFkCode != null">USER_FK_CODE,</if>
+            <if test="fkCode != null">FK_CODE,</if>
+            <if test="leaveStartTime != null">LEAVE_TIME_START,</if>
+            <if test="leaveEndTime != null">LEAVE_TIME_END,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="status != null"> #{status},</if>
+            <if test="userName != null"> #{userName},</if>
+            <if test="leaveType != null"> #{leaveType},</if>
+            <if test="deleteStatus != null"> #{deleteStatus},</if>
+            <if test="leaveMsg != null"> #{leaveMsg},</if>
+            <if test="createTime != null"> #{createTime},</if>
+            <if test="updateTime != null"> #{updateTime},</if>
+            <if test="userFkCode != null"> #{userFkCode},</if>
+            <if test="fkCode != null"> #{fkCode},</if>
+            <if test="leaveStartTime != null"> #{leaveStartTime},</if>
+            <if test="leaveEndTime != null"> #{leaveEndTime},</if>
+        </trim>
+    </insert>
+
+    <!-- updateAssist用于更新数据的使用它拓展自Assist,用于辅助工具类setRequires设置的条件,${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+    <sql id="updateAssist">
+        <where>
+            <foreach collection="assist.require" item="req" separator=" ">
+                ${req.require} #{req.value} <if test="req.suffix != null"> ${req.suffix}</if>
+            </foreach>
+        </where>
+    </sql>
+    <!-- 通过辅助工具Assist中的条件将LeaveInfo中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyLeaveInfo" parameterType="map">
+        update leave_info
+        <set>
+            <if test="enti.id != null">
+                ID=#{enti.id},
+            </if>
+            <if test="enti.status != null">
+                STATUS=#{enti.status},
+            </if>
+            <if test="enti.userName != null">
+                USER_NAME=#{enti.userName},
+            </if>
+            <if test="enti.leaveType != null">
+                LEAVE_TYPE=#{enti.leaveType},
+            </if>
+            <if test="enti.deleteStatus != null">
+                DELETE_STATUS=#{enti.deleteStatus},
+            </if>
+            <if test="enti.leaveMsg != null">
+                LEAVE_MSG=#{enti.leaveMsg},
+            </if>
+            <if test="enti.createTime != null">
+                CREATE_TIME=#{enti.createTime},
+            </if>
+            <if test="enti.updateTime != null">
+                UPDATE_TIME=#{enti.updateTime},
+            </if>
+            <if test="enti.userFkCode != null">
+                USER_FK_CODE=#{enti.userFkCode},
+            </if>
+            <if test="enti.fkCode != null">
+                FK_CODE=#{enti.fkCode},
+            </if>
+            <if test="enti.processId != null">
+                PROCESS_ID=#{enti.processId},
+            </if>
+            <if test="enti.leaveStartTime != null">
+                LEAVE_TIME_START=#{enti.leaveStartTime},
+            </if>
+            <if test="enti.leaveEndTime != null">
+                LEAVE_TIME_END=#{enti.leaveEndTime},
+            </if>
+            <if test="enti.startStatus != null">
+                START_STATUS=#{enti.startStatus},
+            </if>
+        </set>
+        <if test="assist.require!=null"><include refid="updateAssist" /></if>
+    </update>
+</mapper>

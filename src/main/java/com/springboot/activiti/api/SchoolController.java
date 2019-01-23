@@ -59,7 +59,7 @@ public class SchoolController {
         int i = leaveInfoService.updateNonEmptyLeaveInfo(info, assist);
 
         //调用activiti工具类,启动流程(这是提交操作,直接是审核中状态)
-        processUtil.startProcess(String.valueOf(leaveFkCode));
+        processUtil.startProcess("",String.valueOf(leaveFkCode));
         if (i > 0) {
             return ResultUtil.success("启动成功");
         } else {
