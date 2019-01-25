@@ -1,5 +1,6 @@
 package com.springboot.leaveProcess.processApproval.pojo.form;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -8,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @Date:2019/1/23 11:16
  * @Modify by:
  */
+@ApiModel
 public class LeaveForm {
     @ApiModelProperty(value = "请假人外键", dataType = "String", required = true)
     private String userFkCode;//请假人外键
@@ -18,9 +20,9 @@ public class LeaveForm {
     @ApiModelProperty(value = "请假内容", dataType = "String", required = true)
     private String leaveMsg;//请假内容
     @ApiModelProperty(value = "请假开始时间", dataType = "String", required = true)
-    private String leaveDateStart;//请假开始时间
+    private String leaveStartTime;//请假开始时间
     @ApiModelProperty(value = "请假结束时间", dataType = "String", required = true)
-    private String leaveDateEnd;//请假结束时间
+    private String leaveEndTime;//请假结束时间
     @ApiModelProperty(value = "状态 0:草稿 1:已生效", dataType = "Integer", required = true)
     private Integer status;//状态 0:草稿 1:已生效
 
@@ -56,20 +58,20 @@ public class LeaveForm {
         this.leaveMsg = leaveMsg;
     }
 
-    public String getLeaveDateStart() {
-        return leaveDateStart;
+    public String getLeaveStartTime() {
+        return leaveStartTime;
     }
 
-    public void setLeaveDateStart(String leaveDateStart) {
-        this.leaveDateStart = leaveDateStart;
+    public void setLeaveStartTime(String leaveStartTime) {
+        this.leaveStartTime = leaveStartTime;
     }
 
-    public String getLeaveDateEnd() {
-        return leaveDateEnd;
+    public String getLeaveEndTime() {
+        return leaveEndTime;
     }
 
-    public void setLeaveDateEnd(String leaveDateEnd) {
-        this.leaveDateEnd = leaveDateEnd;
+    public void setLeaveEndTime(String leaveEndTime) {
+        this.leaveEndTime = leaveEndTime;
     }
 
     public Integer getStatus() {

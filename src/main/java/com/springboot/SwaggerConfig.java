@@ -28,8 +28,9 @@ public class SwaggerConfig {
                 .title("springboot利用swagger构建api文档")
                 .description("简单优雅的restfun风格")
                 .termsOfServiceUrl("http://blog.csdn.net/saytime") //http://localhost:8080/swagger-ui.html
-                .version("1.0")
+                .version("1.0")     //访问activiModeler是输入：http://localhost:8080/modeler.html?modelId=3 (传模型的id)
                 .build();
     }
 
 }
+

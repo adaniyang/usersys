@@ -1,9 +1,11 @@
-package com.springboot.activiti.domain.vo;
+package com.springboot.activiCommon.pojo.form;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel
 public class TaskOverVo {
-    @ApiModelProperty(value = "业务单据外键(不是请假单外键)", dataType = "String", required = true)
+    @ApiModelProperty(value = "业务单据外键(就是taskId)", dataType = "String", required = true)
     private String taskFkCode;
     @ApiModelProperty(value = "审批人外键", dataType = "String", required = true)
     private String userFkCode;

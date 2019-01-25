@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.leaveProcess.processApproval.dao.ProcessApprovalUserDao">
+    <!-- LeaveInfo的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_ProcessApprovalUserInfo_Map" type="com.springboot.leaveProcess.processApproval.pojo.domain.ProcessApprovalUserDomain">
+        <id column="ID" property="id" />
+        <result column="FK_CODE" property="fkCode" />
+        <result column="USER_FK_CODE" property="userFkCode" />
+        <result column="DELETE_STATUS" property="deleteStatus" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="LEVEL" property="level" />
+        <result column="PROCESS_TYPE" property="processType" />
+    </resultMap>
+
+    
+    <sql id="process_approval_user_Column">
+        t_process_approval_user.ID as ID
+        ,t_process_approval_user.USER_FK_CODE as USER_FK_CODE
+        ,t_process_approval_user.DEL_STATUS as DEL_STATUS
+        ,t_process_approval_user.CREATE_TIME as CREATE_TIME
+        ,t_process_approval_user.UPDATE_TIME as UPDATE_TIME
+        ,t_process_approval_user.LEVEL as LEVEL
+        ,t_process_approval_user.PROCESS_TYPE as PROCESS_TYPE
+        ,t_process_approval_user.FK_CODE as FK_CODE
+    </sql>
+    <!-- Assist用于辅助工具类setRequires设置的条件,${req.require}表示列名,#{req.value}表示值它是防SQL注入的 -->
+    <sql id="Assist">
+        <where>
+            <foreach collection="require" item="req" separator=" ">
+                ${req.require} #{req.value} <if test="req.suffix != null"> ${req.suffix}</if>
+            </foreach>
+        </where>
+    </sql>
+
+    <!-- 获得一个LeaveInfo对象,以参数LeaveInfo对象中不为空的属性作为条件进行查询-->
+    <select id="selectProcessApprovalUser" parameterType="com.common.Assist" resultMap="result_ProcessApprovalUserInfo_Map">
+        select  <if test="distinct !=null">${distinct}</if>
+        <choose>
+            <when test="resultColumn!=null">${resultColumn}</when>
+            <otherwise>
+                <include refid="process_approval_user_Column" />
+            </otherwise>
+        </choose>
+        from t_process_approval_user
+        <choose>
+        <when test="rowSize ==null">
+            <if test="require!=null">
+                <include refid="Assist" />
+            </if>
+            <if test="order !=null">${order}</if>
+        </when>
+        <otherwise>
+            inner join
+            (
+            SELECT ID as primary_key FROM t_process_approval_user
+            <if test="require!=null">
+                <include refid="Assist" />
+            </if>
+            <if test="order !=null">${order}</if>
+            <choose>
+                <when test="startRow !=null and rowSize !=null">LIMIT #{startRow},#{rowSize} </when>
+                <when test="rowSize !=null">LIMIT #{rowSize}</when>
+            </choose>
+            ) as tmp
+            on tmp.primary_key=t_process_approval_user.ID
+        </otherwise>
+        </choose>
+    </select>
+
+</mapper>

@@ -44,8 +44,8 @@ public class LeaveServiceImpl implements LeaveService {
         leaveDomain.setCreateTime(new Date());
         leaveDomain.setUpdateTime(new Date());
         try {
-            leaveDomain.setLeaveStartTime(sdf.parse(leaveForm.getLeaveDateStart()));
-            leaveDomain.setLeaveEndTime(sdf.parse(leaveForm.getLeaveDateEnd()));
+            leaveDomain.setLeaveStartTime(sdf.parse(leaveForm.getLeaveStartTime()));
+            leaveDomain.setLeaveEndTime(sdf.parse(leaveForm.getLeaveEndTime()));
         } catch (ParseException e) {
             e.printStackTrace();
         }

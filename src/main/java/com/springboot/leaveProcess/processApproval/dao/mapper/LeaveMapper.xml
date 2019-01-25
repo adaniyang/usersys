@@ -21,9 +21,9 @@
 
     <!-- 数据库中表名为:t_leave的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
     <sql id="t_leave_Column">
-        t_leave.ID as ID,
+        t_leave.ID as ID
         ,t_leave.FK_CODE as FK_CODE
-        t_leave.USER_FK_CODE as USER_FK_CODE
+        ,t_leave.USER_FK_CODE as USER_FK_CODE
         ,t_leave.USER_NAME as USER_NAME
         ,t_leave.LEAVE_TYPE as LEAVE_TYPE
         ,t_leave.LEAVE_MSG as LEAVE_MSG
@@ -106,7 +106,7 @@
     </sql>
     <!-- 通过辅助工具Assist中的条件将LeaveInfo中属性值不为null的数据更新到数据库对应的表中-->
     <update id="updateNonEmptyLeaveInfo" parameterType="map">
-        update leave_info
+        update t_leave
         <set>
             <if test="enti.id != null">
                 ID=#{enti.id},

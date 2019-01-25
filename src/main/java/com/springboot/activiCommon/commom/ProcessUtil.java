@@ -1,11 +1,13 @@
 package com.springboot.activiCommon.commom;
 
 import com.common.Assist;
-import com.springboot.activiti.dao.LeaveInfoDao;
-import com.springboot.activiti.domain.AuditUser;
-import com.springboot.activiti.domain.LeaveInfo;
-import com.springboot.activiti.domain.vo.TaskOverVo;
-import com.springboot.activiti.service.AuditUserService;
+import com.springboot.activiCommon.pojo.form.TaskOverVo;
+import com.springboot.leaveProcess.processApproval.dao.LeaveDao;
+import com.springboot.leaveProcess.processApproval.dao.ProcessApprovalUserDao;
+import com.springboot.leaveProcess.processApproval.dao.ProcessUtillDao;
+import com.springboot.leaveProcess.processApproval.pojo.domain.LeaveDomain;
+import com.springboot.leaveProcess.processApproval.pojo.domain.ProcessApprovalUserDomain;
+import com.springboot.leaveProcess.processApproval.pojo.domain.ProcessUtillDomain;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -21,8 +23,8 @@ import java.util.List;
  * @Param:描述:activiti工具类
  * @return：返回结果描述:
  * @Throws：返回异常结果:
- * @Author: chenshangxian
- * @Date: 2018-4-25 18:36
+ * @Author: adayang
+ * @Date:2019/1/22 11:17
  */
 @Service
 public class ProcessUtil {
@@ -31,76 +33,28 @@ public class ProcessUtil {
     @Autowired
     private TaskService taskService;
     @Autowired
-    private AuditUserService auditUserService;
+    private ProcessApprovalUserDao processApprovalUserDao;
     @Autowired
-    LeaveInfoDao leaveInfoDao;
+    LeaveDao leaveDao;
+    @Autowired
+    ProcessUtillDao processUtillDao;
 
-    //${processUtil.findOneManager(execution)}
-    //查询一级节点的人
+    //${processUtil.findNodeManager(execution,processType,level)}
+    //查询n级节点的人,一级就传1，二级就传2，三级就传3，以此类推
     //DelegateExecution execution: 执行实例的代理对象
-    public List<String> findOneManager(DelegateExecution execution) {
+    public List<String> findNodeManager(DelegateExecution execution, String processType,Integer level) {
         Assist assist = new Assist();
-        assist.setRequires(Assist.andEq("LEVEL", 1));
-        List<AuditUser> auditUsers = auditUserService.selectAuditUser(assist);
+        assist.setRequires(Assist.andEq("LEVEL", level));
+        assist.setRequires(Assist.andEq("PROCESS_TYPE",processType));
+        List<ProcessApprovalUserDomain> processApprovalUserDomainList = processApprovalUserDao.selectProcessApprovalUser(assist);
         ArrayList<String> list = new ArrayList<>();
-        auditUsers.forEach(e -> {
-            String userFkCode = e.getUserfkcode().toString();
+        processApprovalUserDomainList.forEach(e -> {
+            String userFkCode = e.getUserFkCode().toString();
             list.add(userFkCode);
         });
         return list;
     }
 
-    //查询二级节点的人
-    public List<String> findTwoManager(DelegateExecution execution) {
-        Assist assist = new Assist();
-        assist.setRequires(Assist.andEq("LEVEL", 2));
-        List<AuditUser> auditUsers = auditUserService.selectAuditUser(assist);
-        ArrayList<String> list = new ArrayList<>();
-        auditUsers.forEach(e -> {
-            String userFkCode = e.getUserfkcode().toString();
-            list.add(userFkCode);
-        });
-        return list;
-    }
-
-    //查询三级节点的人
-    public List<String> findThreeManager(DelegateExecution execution) {
-        Assist assist = new Assist();
-        assist.setRequires(Assist.andEq("LEVEL", 3));
-        List<AuditUser> auditUsers = auditUserService.selectAuditUser(assist);
-        ArrayList<String> list = new ArrayList<>();
-        auditUsers.forEach(e -> {
-            String userFkCode = e.getUserfkcode().toString();
-            list.add(userFkCode);
-        });
-        return list;
-    }
-
-    //查询四级节点的人
-    public List<String> findFourManager(DelegateExecution execution) {
-        Assist assist = new Assist();
-        assist.setRequires(Assist.andEq("LEVEL", 4));
-        List<AuditUser> auditUsers = auditUserService.selectAuditUser(assist);
-        ArrayList<String> list = new ArrayList<>();
-        auditUsers.forEach(e -> {
-            String userFkCode = e.getUserfkcode().toString();
-            list.add(userFkCode);
-        });
-        return list;
-    }
-
-    //查询五级节点的人
-    public List<String> findFiveManager(DelegateExecution execution) {
-        Assist assist = new Assist();
-        assist.setRequires(Assist.andEq("LEVEL", 5));
-        List<AuditUser> auditUsers = auditUserService.selectAuditUser(assist);
-        ArrayList<String> list = new ArrayList<>();
-        auditUsers.forEach(e -> {
-            String userFkCode = e.getUserfkcode().toString();
-            list.add(userFkCode);
-        });
-        return list;
-    }
 
     //启动流程
     //processId:流程的id,很重要
@@ -137,15 +91,22 @@ public class ProcessUtil {
     //修改业务单据
     public void changeStatus(DelegateExecution execution, String status) {
         System.out.println("修改业务单据状态:->" + status);
-        //获取请假单的id
-        String processBusinessKey = execution.getProcessBusinessKey();
-        LeaveInfo leaveInfo = new LeaveInfo();
-        leaveInfo.setFkCode(Long.parseLong(processBusinessKey));
-        LeaveInfo leaveInfo1 = leaveInfoDao.selectLeaveInfoByObj(leaveInfo);
-        leaveInfo1.setStatus(status);
+        //通过各业务的外键查找是那个业务流程，然后修改不同业务的字段
+        //获取各业务的外键
+        String processFkCode = execution.getProcessBusinessKey();
+        ProcessUtillDomain processUtillDomain = processUtillDao.getAllProcessInfo(processFkCode);
+        switch (processUtillDomain.getType()){
+            case "QJ":
+                //执行请假的更新操作
+                LeaveDomain leaveDomain = new LeaveDomain();
+                leaveDomain.setStatus(Integer.parseInt(status));
+                Assist assist = new Assist();
+                assist.setRequires(Assist.andEq("FK_CODE", processFkCode));
+                leaveDao.updateNonEmptyLeaveInfo(leaveDomain, assist);
+                break;
+            default:
+                    break;
 
-        Assist assist = new Assist();
-        assist.setRequires(Assist.andEq("FK_CODE", processBusinessKey));
-        leaveInfoDao.updateNonEmptyLeaveInfo(leaveInfo1, assist);
+        }
     }
 }

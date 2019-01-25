@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.leaveProcess.processApproval.dao.ProcessUtillDao">
+    <!-- LeaveInfo的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_ProcessUtillInfo_Map" type="com.springboot.leaveProcess.processApproval.pojo.domain.ProcessUtillDomain">
+        <id column="ID" property="id" />
+        <result column="FK_CODE" property="fkCode" />
+        <result column="TYPE" property="type" />
+    </resultMap>
+
+    <!-- 查看是那个流程 -->
+    <select id="getAllProcessInfo" parameterType="java.lang.String" resultMap="result_ProcessUtillInfo_Map">
+        select s.* from (
+        select ID,FK_CODE,"QJ" as TYPE
+        from t_leave
+        )s
+        where s.FK_CODE = #{processFkCode}
+    </select>
+
+</mapper>
