@@ -4,7 +4,7 @@ import java.util.Date;
 
 //@ApiModel(description = "用户实体user")
 public class User {
-    private Long Id;
+    private Long id;
     private String userAccount;
     private String pwd;
     private Integer delStatus;
@@ -12,15 +12,17 @@ public class User {
     private Date updateTime;
 
 //    @ApiModelProperty(value = "Id值",dataType = "Long",required = true)
+
+
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
-//    @ApiModelProperty(value = "用户名",dataType = "String",required = true)
+    //    @ApiModelProperty(value = "用户名",dataType = "String",required = true)
     public String getUserAccount() {
         return userAccount;
     }

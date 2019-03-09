@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.usersys.dao.UserDao">
     <resultMap id="userModel" type="com.springboot.usersys.pojo.User">
-        <id column="ID" property="Id" javaType="Long" jdbcType="BIGINT"/>
+        <id column="ID" property="id" javaType="Long" jdbcType="BIGINT"/>
         <result  column="CREATE_TIME" property="createTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
         <result  column="UPDATE_TIME" property="updateTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
         <result  column="DEL_STATUS" property="delStatus"  javaType="Integer" jdbcType="TINYINT"/>
@@ -80,4 +80,21 @@
         </set>
         where ID = #{Id,jdbcType=BIGINT}
     </update>
+    <resultMap id="roleGroupResultMap" type="com.springboot.usersys.pojo.vo.RoleGroupInforVo">
+        <id column="roleGroupFkCode" property="roleGroupFkCode"/>
+        <result column="roleGroupName" property="roleGroupName"/>
+        <collection property="eduRoleVoList" ofType="com.springboot.usersys.pojo.vo.EduRoleVo">
+            <result column="roleFkCode" property="roleFkCode"/>
+            <result column="roleName" property="roleName"/>
+            <result column="delStatus" property="delStatus"/>
+        </collection>
+    </resultMap>
+    <select id="testReturnResult" resultMap="roleGroupResultMap">
+        SELECT srg.FK_CODE roleGroupFkCode,srg.IDENTITY_GROUP_NAME roleGroupName,sr.FK_CODE roleFkCode,sr.ROLE_NAME roleName,sr.DEL_STATUS delStatus
+        FROM Sys_Role_Group srg
+        LEFT JOIN Sys_Role sr  on srg.FK_CODE = sr.ROLE_GROUP_FK_CODE
+        WHERE srg.DEL_STATUS = 0
+        AND srg.FK_CODE IN(4,7) AND sr.SCHOOL_FK_CODE = 282587842410971136
+        ORDER BY srg.FK_CODE ASC
+    </select>
 </mapper>

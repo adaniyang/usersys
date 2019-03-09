@@ -1,6 +1,7 @@
 package com.springboot.usersys.controller;
 
 import com.springboot.usersys.pojo.User;
+import com.springboot.usersys.pojo.vo.RoleGroupInforVo;
 import com.springboot.usersys.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -77,4 +78,10 @@ public class UserController {
         return userList;
     }
 
+    //测试返回结果集自动组装为list对象内的list属性
+    @ApiOperation(value = "测试返回结果集自动组装为list对象内的list属性(created by yangni)")
+    @GetMapping("/edubureauuser_management/testReturnResult")
+    public List<RoleGroupInforVo> testReturnResult() {
+        return  userService.testReturnResult();
+    }
 }
